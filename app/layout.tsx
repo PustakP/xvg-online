@@ -1,6 +1,18 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Arimo } from 'next/font/google'
+import { Rubik } from 'next/font/google'
+
+const arimo = Arimo({
+  subsets: ['latin'],
+  display: 'swap',
+})
+
+const rubik = Rubik({
+  subsets: ['latin'],
+  display: 'swap',
+})
 
 const inter = Inter({ subsets: ["latin"] });
 
