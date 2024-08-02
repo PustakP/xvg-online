@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Download, Upload } from "lucide-react"
+import { Download, Hourglass, Upload } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -10,6 +10,7 @@ export function Page() {
   console.log('Page component rendered')
   const [file, setFile] = useState<File | null>(null)
   const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log('File selection changed')
@@ -27,13 +28,14 @@ export function Page() {
       return
     }
 
+    setIsLoading(true)
+
     const formData = new FormData()
     formData.append('file', file)
     console.log('FormData created with file')
-
     try {
       console.log('Sending request to server')
-      const response = await fetch('http://localhost:5000/process_xvg', {
+      const response = await fetch(process.env.NEXT_PUBLIC_API_LINK!, {
         method: 'POST',
         body: formData,
       })
@@ -72,6 +74,8 @@ export function Page() {
       }
     } catch (error) {
       console.error('Error:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -80,17 +84,26 @@ export function Page() {
       <div className="max-w-md w-full px-4 md:px-0">
         <div className="text-center">
           <h1 className="text-5xl font-bold text-primary">xvg-online</h1>
-          <p className="mt-4 text-muted-foreground mb-2">A simple tool to visualize and export your 'xvg' files.</p>
+          <p className="mt-4 text-muted-foreground mb-2">A simple tool to visualize and export your &apos;xvg&apos; files.</p>
         </div>
         <div className="mt-4 bg-card rounded-lg shadow-lg p-6">
           <form className="grid gap-4" onSubmit={handleSubmit}>
             <div>
-              <Label htmlFor="file">Upload your 'xvg' file</Label>
+              <Label htmlFor="file">Upload your &apos;xvg&apos; file</Label>
               <Input type="file" id="file" onChange={handleFileChange} />
             </div>
-            <Button type="submit" variant="secondary">
-              <Upload className="w-4 h-4 mr-2" />
-              Process XVG File
+            <Button type="submit" variant="secondary" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Hourglass/>
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4 mr-2" />
+                  Process XVG File
+                </>
+              )}
             </Button>
           </form>
         </div>
